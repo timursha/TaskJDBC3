@@ -9,17 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
-    //commit
     @Override
     public void createUsersTable() {
-        // ..
         Transaction transaction = null;
-        Session session = Util.getSessionFactory().openSession();
-        transaction = session.beginTransaction();
+        Session sesn = Util.getSessionFactory().openSession();
+        transaction = sesn.beginTransaction();
         String sql = "CREATE TABLE IF NOT EXISTS users (id integer primary key auto_increment not null, name varchar(124), lastName varchar(124), age int)";
-        int a = session.createSQLQuery(sql).executeUpdate();
+        int a = sesn.createSQLQuery(sql).executeUpdate();
         transaction.commit();
-        session.close();
+        sesn.close();
     }
 
     @Override
