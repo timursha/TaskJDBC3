@@ -4,20 +4,16 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void createUsersTable() {
-        Transaction transaction = null;
-        Session sesn = Util.getSessionFactory().openSession();
-        transaction = sesn.beginTransaction();
+        Session session = Util.getSessionFactory().openSession();
+        session.beginTransaction();
         String sql = "CREATE TABLE IF NOT EXISTS users (id integer primary key auto_increment not null, name varchar(124), lastName varchar(124), age int)";
-        int a = sesn.createSQLQuery(sql).executeUpdate();
-        transaction.commit();
-        sesn.close();
+        session.createSQLQuery(sql).executeUpdate();
+        session.close();
     }
 
     @Override
@@ -33,12 +29,8 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         Session session = Util.getSessionFactory().openSession();
-        User user = new User();
-        user.setName(name);
-        user.setLastName(lastName);
-        user.setAge(age);
         Transaction transaction = session.beginTransaction();
-        session.save(user);
+        session.save(new User(name, lastName, age));
         transaction.commit();
         session.close();
     }
@@ -46,38 +38,26 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void removeUserById(long id) {
-        Transaction transaction = null;
         Session session = Util.getSessionFactory().openSession();
-        transaction = session.beginTransaction();
-        String queryString = "delete from users where id=" + id;
-        int a = session.createSQLQuery(queryString).executeUpdate();
-        transaction.commit();
+        session.beginTransaction();
+        Query query = session.createQuery("DELETE FROM User WHERE id = :userid");
+        query.setParameter("userid", id).executeUpdate();
         session.close();
     }
 
     @Override
     public List<User> getAllUsers() {
-        List <User> listUsers = new ArrayList<>();
         Session session = Util.getSessionFactory().openSession();
-        session.beginTransaction();
-        String queryStr = "select * from users";
-        Query query = session.createSQLQuery(queryStr);
-        listUsers = query.list();
-        session.getTransaction().commit();
-        System.out.println(listUsers);
+        List <User> userList = session.createCriteria(User.class).list();
         session.close();
-        return listUsers;
+        return userList;
     }
 
     @Override
     public void cleanUsersTable() {
-        Transaction transaction = null;
         Session session = Util.getSessionFactory().openSession();
-        transaction = session.beginTransaction();
-        String queryStr = "delete from users ";
-        Query query = session.createSQLQuery(queryStr);
-        int a = query.executeUpdate();
-        transaction.commit();
+        session.getTransaction().begin();
+        session.createQuery("delete from User").executeUpdate();
         session.close();
     }
 }

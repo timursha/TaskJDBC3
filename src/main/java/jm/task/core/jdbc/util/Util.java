@@ -3,6 +3,7 @@ import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.service.ServiceRegistry;
 
 import java.sql.Connection;
@@ -34,8 +35,8 @@ public class Util {
                         .setProperty("hibernate.connection.username",         "root")
                         .setProperty("hibernate.connection.password",         "root")
                         .setProperty("hibernate.dialect",                     "org.hibernate.dialect.MySQL5Dialect")
-//                        .setProperty("hibernate.hbm2dll.auto",                "update")
-//                        .setProperty("hibernate.show_sql",                    "true")
+                        .setProperty("hibernate.hbm2dll.auto",                "update")
+                        .setProperty("hibernate.show_sql",                    "true")
                         .addAnnotatedClass(User.class);
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(config.getProperties()).build();
